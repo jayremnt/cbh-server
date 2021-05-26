@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 5000;
 const mongoose = require('mongoose');
 // routes
-const userRoutes = require('./api/routes/user.route');
+const usersRoutes = require('./api/routes/users.route');
 
 // mongoose connect
 mongoose.connect(`mongodb+srv://JayremntB:${process.env.DB_PW}@cluster0.nx3tc.mongodb.net/test`, {
@@ -31,7 +31,7 @@ app.use((req, res, next) => {
 	next();
 });
 // routes
-app.use('/user', userRoutes);
+app.use('/users', usersRoutes);
 
 app.use((req, res, next) => {
 	const error = new Error("Not found");
