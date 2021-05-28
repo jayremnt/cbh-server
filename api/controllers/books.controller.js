@@ -104,10 +104,16 @@ exports.editBook = (req, res, next) => {
 	console.log(updateData);
 	BookModel.findOneAndUpdate({
 		code: bookCode
-	}, updateData).then(() => {
+	}, updateData).then(book => {
+		if(book) {
+			return res.status(200).json({
+				error: false,
+				message: "Successfully edited"
+			});
+		}
 		return res.status(200).json({
-			error: false,
-			message: "Successfully edited"
+			error: true,
+			message: "Book not found"
 		});
 	}).catch(err => {
 		console.log(err);
@@ -124,10 +130,16 @@ exports.deleteBook = (req, res, next) => {
 	console.log(updateData);
 	BookModel.findOneAndDelete({
 		code: bookCode
-	}, updateData).then(() => {
+	}, updateData).then(book => {
+		if(book) {
+			return res.status(200).json({
+				error: false,
+				message: "Successfully deleted"
+			});
+		}
 		return res.status(200).json({
-			error: false,
-			message: "Successfully deleted"
+			error: true,
+			message: "Book not found"
 		});
 	}).catch(err => {
 		console.log(err);
