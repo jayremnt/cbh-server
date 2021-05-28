@@ -5,6 +5,7 @@ const port = process.env.PORT || 5000;
 const mongoose = require('mongoose');
 // routes
 const usersRoutes = require('./api/routes/users.route');
+const booksRoutes = require('./api/routes/books.route');
 
 // mongoose connect
 mongoose.connect(`mongodb+srv://JayremntB:${process.env.DB_PW}@cluster0.nx3tc.mongodb.net/test`, {
@@ -32,6 +33,8 @@ app.use((req, res, next) => {
 });
 // routes
 app.use('/users', usersRoutes);
+app.use('/books', booksRoutes);
+
 
 app.use((req, res, next) => {
 	const error = new Error("Not found");

@@ -1,13 +1,13 @@
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const UserModel = require("../models/user.model");
 
-exports.register = function (req, res, next) {
+exports.register = (req, res, next) => {
 	console.log(req.body);
+	const registerInfo = req.body;
 	UserModel.find({
-		email: req.body.email
+		email: registerInfo.email
 	}).exec().then(user => {
 		if (user.length >= 1) {
 			return res.status(200).json({
@@ -16,7 +16,7 @@ exports.register = function (req, res, next) {
 			});
 		}
 		else {
-			bcrypt.hash(req.body.password, 10, (err, hash) => {
+			bcrypt.hash(registerInfo.password, 10, (err, hash) => {
 				if (err) {
 					console.log(err);
 					return res.status(200).json({
@@ -24,28 +24,26 @@ exports.register = function (req, res, next) {
 						message: err
 					});
 				}
-				else {
-					console.log(hash);
-					UserModel.create({
-						email: req.body.email,
-						password: hash,
-						role: req.body.role,
-						name: req.body.name,
-					}, (err, result) => {
-						if (err) {
-							console.log(err);
-							return res.status(200).json({
-								error: true,
-								message: err
-							});
-						}
-						console.log(result);
-						res.status(200).json({
-							error: false,
-							message: "User created"
+				console.log(hash);
+				UserModel.create({
+					email: registerInfo.email,
+					password: hash,
+					role: registerInfo.role,
+					name: registerInfo.name,
+				}, (err, result) => {
+					if (err) {
+						console.log(err);
+						return res.status(200).json({
+							error: true,
+							message: err
 						});
+					}
+					console.log(result);
+					res.status(200).json({
+						error: false,
+						message: "User created"
 					});
-				}
+				});
 			});
 		}
 	}).catch(err => {
@@ -57,9 +55,10 @@ exports.register = function (req, res, next) {
 	});
 }
 
-exports.login = function (req, res, next) {
+exports.login = (req, res, next) => {
+	const loginInfo = req.body;
 	UserModel.find({
-		email: req.body.email
+		email: loginInfo.email
 	}).exec().then(user => {
 		if (user.length < 1) {
 			return res.status(200).json({
@@ -67,7 +66,7 @@ exports.login = function (req, res, next) {
 				message: "Auth failed"
 			});
 		}
-		bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+		bcrypt.compare(loginInfo.password, user[0].password, (err, result) => {
 			if (err) {
 				console.log(err);
 				return res.status(200).json({
@@ -89,7 +88,9 @@ exports.login = function (req, res, next) {
 				return res.status(200).json({
 					error: false,
 					message: "Auth successful",
-					token: token
+					data: {
+						token: token
+					}
 				});
 			}
 			res.status(200).json({
@@ -106,7 +107,7 @@ exports.login = function (req, res, next) {
 	});
 }
 
-exports.delete = function (req, res, next) {
+exports.delete = (req, res, next) => {
 	UserModel.remove({_id: req.params.userId})
 	.exec()
 	.then(result => {
