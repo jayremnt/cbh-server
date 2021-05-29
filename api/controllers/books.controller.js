@@ -126,11 +126,9 @@ exports.editBook = (req, res, next) => {
 
 exports.deleteBook = (req, res, next) => {
 	const bookCode = req.params.bookCode;
-	const updateData = req.body.update_data;
-	console.log(updateData);
 	BookModel.findOneAndDelete({
 		code: bookCode
-	}, updateData).then(book => {
+	}).then(book => {
 		if(book) {
 			return res.status(200).json({
 				error: false,
