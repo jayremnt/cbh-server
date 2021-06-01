@@ -10,7 +10,8 @@ module.exports = (req, res, next) => {
 	} catch (err) {
 		console.log(err);
 		res.status(200).json({
-			error: err
+			error: true,
+			message: "Expired token or invaluable token"
 		});
 	}
 }

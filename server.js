@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 5000;
 const mongoose = require('mongoose');
+const authJwt = require('./api/middlewares/auth-jwt');
 // routes
 const usersRoutes = require('./api/routes/users.route');
 const booksRoutes = require('./api/routes/books.route');
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 app.use('/users', usersRoutes);
 app.use('/books', booksRoutes);
 app.use('/borrowers', borrowersRoutes);
+app.use('/alive', authJwt);
 
 
 app.use((req, res, next) => {
