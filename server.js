@@ -37,7 +37,16 @@ app.use((req, res, next) => {
 app.use('/users', usersRoutes);
 app.use('/books', booksRoutes);
 app.use('/borrowers', borrowersRoutes);
-app.use('/alive', authJwt);
+app.use('/alive/', authJwt, (req, res, next) => {
+	res.status(200).json({
+		error: false,
+		message: "Token validated",
+		data: {
+			is_expired: false
+		}
+	});
+	next();
+});
 
 
 app.use((req, res, next) => {
