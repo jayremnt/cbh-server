@@ -63,7 +63,7 @@ exports.login = (req, res, next) => {
 		if (user.length < 1) {
 			return res.status(200).json({
 				error: true,
-				message: "Auth failed"
+				message: "Login failed"
 			});
 		}
 		bcrypt.compare(loginInfo.password, user[0].password, (err, result) => {
@@ -71,7 +71,7 @@ exports.login = (req, res, next) => {
 				console.log(err);
 				return res.status(200).json({
 					error: true,
-					message: "Auth failed"
+					message: "Login failed"
 				});
 			}
 			if (result) {
@@ -82,20 +82,22 @@ exports.login = (req, res, next) => {
 					},
 					process.env.JWT_KEY,
 					{
-						expiresIn: "1h"
+						expiresIn: "1d"
 					}
 				);
+
 				return res.status(200).json({
 					error: false,
-					message: "Auth successful",
+					message: "Login successful",
 					data: {
+						account: user,
 						token: token
 					}
 				});
 			}
 			res.status(200).json({
 				error: true,
-				message: "Auth failed"
+				message: "Login failed"
 			});
 		});
 	}).catch(err => {
