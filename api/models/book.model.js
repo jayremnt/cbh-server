@@ -8,7 +8,9 @@ const bookSchema = mongoose.Schema({
 	cost: Number,
 	imported_date: Date,
 	responsible_person: String,
-	is_borrowed: Boolean
+	is_borrowed: Boolean,
+	borrowed_times: Number,
+	borrower: String
 });
 
 module.exports = mongoose.model('Book', bookSchema);

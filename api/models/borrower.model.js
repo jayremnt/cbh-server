@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 
 const borrowedBookSchema = mongoose.Schema({
-	book_code: String,
-	borrowed_start_date: Date,
-	borrowed_expired_date: Date,
+	code: String,
+	name: String,
+	author: String,
+	location: String,
+	borrowed_date: Date,
+	expired_date: Date,
 	extended_times: Number,
 	responsible_person: String,
 });
