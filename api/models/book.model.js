@@ -6,7 +6,7 @@ const bookSchema = mongoose.Schema({
 	author: String,
 	location: String,
 	cost: Number,
-	imported_date: Date,
+	imported_time: Number,
 	responsible_person: String,
 	is_borrowed: Boolean,
 	borrowed_times: Number,

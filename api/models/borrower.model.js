@@ -5,8 +5,8 @@ const borrowedBookSchema = mongoose.Schema({
 	name: String,
 	author: String,
 	location: String,
-	borrowed_date: Date,
-	expired_date: Date,
+	borrowed_time: Number,
+	expired_time: Number,
 	extended_times: Number,
 	responsible_person: String,
 });
