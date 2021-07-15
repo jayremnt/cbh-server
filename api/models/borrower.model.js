@@ -8,7 +8,10 @@ const borrowedBookSchema = mongoose.Schema({
 	borrowed_time: Number,
 	expired_time: Number,
 	extended_times: Number,
-	responsible_person: String,
+	responsible_person: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User"
+	},
 });
 
 const borrowerSchema = mongoose.Schema({
