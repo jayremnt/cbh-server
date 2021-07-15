@@ -25,6 +25,10 @@ const borrowerSchema = mongoose.Schema({
 	current_borrowed_books: {
 		type: [borrowedBookSchema],
 		require: true
+	},
+	responsible_person: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User"
 	}
 });
 

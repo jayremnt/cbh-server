@@ -59,8 +59,14 @@ exports.getBorrowerInfo = (req, res, next) => {
 
 	borrowerModel.findOne({
 		student_code: borrowerCode
-	}).then(borrowerInfo => {
+	}).populate("responsible_person").then(borrowerInfo => {
 		console.log(borrowerInfo);
+		if (!borrowerInfo) {
+			return res.status(200).json({
+				error: true,
+				message: "Borrower not found"
+			});
+		}
 		return res.status(200).json({
 			error: false,
 			message: "Successfully get borrower info",
