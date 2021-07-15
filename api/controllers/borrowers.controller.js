@@ -36,7 +36,7 @@ exports.addBorrower = (req, res, next) => {
 }
 
 exports.getAllBorrowers = (req, res, next) => {
-	borrowerModel.find({}).exec().then(borrowers => {
+	borrowerModel.find({}).populate("responsible_person").then(borrowers => {
 		console.log(borrowers);
 		return res.status(200).json({
 			error: false,

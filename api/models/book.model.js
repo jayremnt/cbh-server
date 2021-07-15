@@ -7,7 +7,10 @@ const bookSchema = mongoose.Schema({
 	location: String,
 	cost: Number,
 	imported_time: Number,
-	responsible_person: String,
+	responsible_person: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User"
+	},
 	is_borrowed: Boolean,
 	borrowed_times: Number,
 	borrower: String

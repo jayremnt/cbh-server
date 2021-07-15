@@ -39,7 +39,7 @@ exports.addBook = (req, res, next) => {
 exports.getAvailableBooks = (req, res, next) => {
 	BookModel.find({
 		is_borrowed: false
-	}).exec().then(availableBooks => {
+	}).populate("responsible_person").then(availableBooks => {
 		console.log(availableBooks);
 		return res.status(200).json({
 			error: false,
@@ -58,7 +58,7 @@ exports.getAvailableBooks = (req, res, next) => {
 }
 
 exports.getAllBooks = (req, res, next) => {
-	BookModel.find({}).exec().then(books => {
+	BookModel.find({}).populate("responsible_person").then(books => {
 		console.log(books);
 		return res.status(200).json({
 			error: false,
@@ -80,7 +80,7 @@ exports.getBookDetails = (req, res, next) => {
 	const bookCode = req.params.bookCode;
 	BookModel.findOne({
 		code: bookCode
-	}).then(bookDetails => {
+	}).populate("responsible_person").then(bookDetails => {
 		console.log(bookDetails);
 		return res.status(200).json({
 			error: false,
