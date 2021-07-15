@@ -36,7 +36,7 @@ exports.addBorrower = (req, res, next) => {
 }
 
 exports.getAllBorrowers = (req, res, next) => {
-	borrowerModel.find({}).populate("responsible_person").then(borrowers => {
+	borrowerModel.find({}).populate("responsible_person").populate("current_borrowed_books.responsible_person").then(borrowers => {
 		console.log(borrowers);
 		return res.status(200).json({
 			error: false,
@@ -59,7 +59,7 @@ exports.getBorrowerInfo = (req, res, next) => {
 
 	borrowerModel.findOne({
 		student_code: borrowerCode
-	}).populate("responsible_person").then(borrowerInfo => {
+	}).populate("responsible_person").populate("current_borrowed_books.responsible_person").then(borrowerInfo => {
 		console.log(borrowerInfo);
 		if (!borrowerInfo) {
 			return res.status(200).json({
