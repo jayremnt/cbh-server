@@ -119,15 +119,15 @@ BooksController.borrowing = async (req, res, next) => {
         })
         console.log(book);
         if (book) {
-            let borrower = await BorrowerModel.findOneAndUpdate({
-                code: borrower
+            let updatedBorrower = await BorrowerModel.findOneAndUpdate({
+                student_code: borrower
             }, {
                 $push: {
                     current_borrowed_books: book._id
                 }
             });
 
-            if (borrower) {
+            if (updatedBorrower) {
                 return res.status(200).json({
                     error: false,
                     message: "Successfully updated borrowed info"
@@ -147,8 +147,7 @@ BooksController.borrowing = async (req, res, next) => {
         console.log(e);
         res.status(200).json({
             error: true,
-            message: "Error occurred",
-            data: e
+            message: "Error occurred"
         });
     }
 }
