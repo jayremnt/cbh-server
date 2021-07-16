@@ -5,9 +5,8 @@ let BooksController = {};
 
 BooksController.addBook = async (req, res, next) => {
     const bookInfo = req.body;
-    console.log(bookInfo);
     try {
-        let book = BookModel.findOne({
+        let book = await BookModel.findOne({
             code: bookInfo.code
         });
         console.log(book);
@@ -17,11 +16,22 @@ BooksController.addBook = async (req, res, next) => {
                 message: "Book exists"
             });
         }
-        let newBook = await BookModel.create(bookInfo);
+        let newBook = await BookModel.create({
+            author: bookInfo.author,
+            code: bookInfo.code,
+            cost: bookInfo.cost,
+            imported_time: bookInfo.imported_time,
+            location: bookInfo.location,
+            name: bookInfo.name,
+            responsible_person: bookInfo.responsible_person
+        });
         console.log(newBook);
         return res.status(200).json({
             error: false,
-            message: "Added book"
+            message: "Added book",
+            data: {
+                book: newBook
+            }
         });
     } catch (e) {
         console.log(e);
@@ -116,29 +126,35 @@ BooksController.borrowing = async (req, res, next) => {
         });
         console.log(updatedBorrower);
 
-        if (updatedBorrower) {
-            console.log(updatedBorrower);
-            let book = await BookModel.findOneAndUpdate({
-                _id: bookId
-            }, {
-                is_borrowed: isBorrowed,
-                borrower: updatedBorrower._id,
-                borrowed_time: borrowedTime,
-                expired_time: expiredTime,
-                $inc: {
-                    'borrowed_times': 1
-                }
-            })
-            console.log(book);
+        if (!updatedBorrower) {
+            return res.status(200).json({
+                error: true,
+                message: "Borrower not found"
+            });
+        }
+
+
+        let book = await BookModel.findOneAndUpdate({
+            _id: bookId
+        }, {
+            is_borrowed: isBorrowed,
+            borrower: borrower,
+            borrowed_time: borrowedTime,
+            expired_time: expiredTime,
+            $inc: {
+                'borrowed_times': 1
+            }
+        })
+        console.log(book);
+        if (!book) {
             return res.status(200).json({
                 error: true,
                 message: "Book not found"
             });
         }
-
         return res.status(200).json({
-            error: false,
-            message: "Borrower not found"
+            error: true,
+            message: "Successfully updated"
         });
     } catch (e) {
         console.log(e);

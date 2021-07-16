@@ -13,6 +13,10 @@ const bookSchema = mongoose.Schema({
 			expired_time: Number,
 			borrower: {
 				type: mongoose.Schema.Types.ObjectId,
+				ref: "Borrower"
+			},
+			responsible_person: {
+				type: mongoose.Schema.Types.ObjectId,
 				ref: "User"
 			}
 		}]
@@ -27,7 +31,7 @@ const bookSchema = mongoose.Schema({
 	expired_time: Number,
 	borrower: {
 		type: mongoose.Schema.Types.ObjectId,
-		ref: "User"
+		ref: "Borrower"
 	}
 });
 
