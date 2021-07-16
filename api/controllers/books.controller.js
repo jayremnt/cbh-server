@@ -1,165 +1,239 @@
 const BookModel = require("../models/book.model");
+const BorrowerModel = require("../models/borrower.model");
 
 let BooksController = {};
 
-BooksController.addBook = (req, res, next) => {
-	const bookInfo = req.body;
-	console.log(bookInfo);
-	BookModel.findOne({
-		code: bookInfo.code
-	}).exec().then(book => {
-		console.log(book);
-		if (book) {
-			return res.status(200).json({
-				error: true,
-				message: "Book exists"
-			});
-		}
-		BookModel.create(bookInfo, (err, result) => {
-			if (err) {
-				console.log(err);
-				return res.status(200).json({
-					error: true,
-					message: err
-				});
-			}
-			console.log(result);
-			return res.status(200).json({
-				error: false,
-				message: "Added book"
-			});
-		});
-	}).catch(err => {
-		console.log(err);
-		return res.status(200).json({
-			error: true,
-			message: err
-		});
-	});
+BooksController.addBook = async (req, res, next) => {
+    const bookInfo = req.body;
+    console.log(bookInfo);
+    try {
+        let book = BookModel.findOne({
+            code: bookInfo.code
+        });
+        console.log(book);
+        if (book) {
+            return res.status(200).json({
+                error: true,
+                message: "Book exists"
+            });
+        }
+        let newBook = await BookModel.create(bookInfo);
+        console.log(newBook);
+        return res.status(200).json({
+            error: false,
+            message: "Added book"
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
 }
 
-BooksController.getAvailableBooks = (req, res, next) => {
-	BookModel.find({
-		is_borrowed: false
-	}).populate("responsible_person").then(availableBooks => {
-		console.log(availableBooks);
-		return res.status(200).json({
-			error: false,
-			message: "Successfully get all available books",
-			data: {
-				list_available_books: availableBooks
-			}
-		});
-	}).catch(err => {
-		console.log(err);
-		return res.status(200).json({
-			error: true,
-			message: err
-		});
-	});
+BooksController.getAvailableBooks = async (req, res, next) => {
+    try {
+        let availableBooks = await BookModel.find({
+            is_borrowed: false
+        }).populate("responsible_person");
+        console.log(availableBooks);
+        return res.status(200).json({
+            error: false,
+            message: "Successfully get all available books",
+            data: {
+                list_available_books: availableBooks
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
+
 }
 
-BooksController.getAllBooks = (req, res, next) => {
-	BookModel.find({}).populate("responsible_person").then(books => {
-		console.log(books);
-		return res.status(200).json({
-			error: false,
-			message: "Successfully get all books",
-			data: {
-				list_books: books
-			}
-		});
-	}).catch(err => {
-		console.log(err);
-		return res.status(200).json({
-			error: true,
-			message: err
-		});
-	});
+BooksController.getAllBooks = async (req, res, next) => {
+    try {
+        let books = await BookModel.find({}).populate("responsible_person");
+        console.log(books);
+        return res.status(200).json({
+            error: false,
+            message: "Successfully get all books",
+            data: {
+                list_books: books
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
 }
 
-BooksController.getBookDetails = (req, res, next) => {
-	const bookCode = req.params.bookCode;
-	BookModel.findOne({
-		code: bookCode
-	}).populate("responsible_person").then(bookDetails => {
-		console.log(bookDetails);
-		return res.status(200).json({
-			error: false,
-			message: "Successfully get book details",
-			data: {
-				book_details: bookDetails
-			}
-		});
-	}).catch(err => {
-		console.log(err);
-		return res.status(200).json({
-			error: true,
-			message: err
-		});
-	});
+BooksController.getBookDetails = async (req, res, next) => {
+    const bookCode = req.params.bookCode;
+    try {
+        let bookDetails = await BookModel.findOne({
+            code: bookCode
+        }).populate("responsible_person");
+        console.log(bookDetails);
+        return res.status(200).json({
+            error: false,
+            message: "Successfully get book details",
+            data: {
+                book_details: bookDetails
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
 }
 
-BooksController.borrowing = (req, res, next) => {
-	const bookCode = req.params.bookCode;
-	const borrower = req.params.borrowerCode;
-	const borrowed_time = req.params.borrowedTime;
+BooksController.borrowing = async (req, res, next) => {
+    const bookCode = req.params.bookCode;
+    const is_borrowed = true;
+    const borrower = req.body.borrowerCode;
+    const borrowed_time = req.body.borrowedTime;
+    const expired_time = req.body.expiredTime;
 
-	BookModel.findOneAndUpdate({
-		code: bookCode
-	}, {
+    try {
+        let book = await BookModel.findOneAndUpdate({
+            code: bookCode
+        }, {
+            is_borrowed,
+            borrower,
+            borrowed_time,
+            expired_time,
+            $inc: {
+                'borrowed_times': 1
+            }
+        })
+        console.log(book);
+        if (book) {
+            let borrower = await BorrowerModel.findOneAndUpdate({
+                code: borrower
+            }, {
+                $push: {
+                    current_borrowed_books: book._id
+                }
+            });
 
-	})
+            if (borrower) {
+                return res.status(200).json({
+                    error: false,
+                    message: "Successfully updated borrowed info"
+                })
+            }
+
+            return res.status(200).json({
+                error: false,
+                message: "Borrower not found"
+            });
+        }
+        return res.status(200).json({
+            error: true,
+            message: "Book not found"
+        });
+    } catch (e) {
+        console.log(e);
+        res.status(200).json({
+            error: true,
+            message: "Error occurred",
+            data: e
+        });
+    }
 }
 
-BooksController.editBook = (req, res, next) => {
-	const bookCode = req.params.bookCode;
-	const updateData = req.body.update_data;
-	console.log(updateData);
-	BookModel.findOneAndUpdate({
-		code: bookCode
-	}, updateData).then(book => {
-		if (book) {
-			return res.status(200).json({
-				error: false,
-				message: "Successfully edited"
-			});
-		}
-		return res.status(200).json({
-			error: true,
-			message: "Book not found"
-		});
-	}).catch(err => {
-		console.log(err);
-		return res.status(200).json({
-			error: true,
-			message: err
-		});
-	});
+BooksController.returnBook = (req, res, next) => {
+    const bookCode = req.params.bookCode;
+    const is_borrowed = true;
+    const borrower = req.body.borrowerCode;
+    const borrowed_time = req.body.borrowedTime;
+
+    BookModel.findOneAndUpdate({
+        code: bookCode
+    }, {
+        is_borrowed,
+        borrower,
+        borrowed_time,
+        $inc: {
+            'borrowed_times': 1
+        }
+    }).then(book => {
+        console.log(book);
+        if (book) {
+            return res.status(200).json({
+                error: false,
+                message: "Successfully updated"
+            });
+        }
+        return res.status(200).json({
+            error: true,
+            message: "Book not found"
+        });
+    });
 }
 
-BooksController.deleteBook = (req, res, next) => {
-	const bookCode = req.params.bookCode;
-	BookModel.findOneAndDelete({
-		code: bookCode
-	}).then(book => {
-		if (book) {
-			return res.status(200).json({
-				error: false,
-				message: "Successfully deleted"
-			});
-		}
-		return res.status(200).json({
-			error: true,
-			message: "Book not found"
-		});
-	}).catch(err => {
-		console.log(err);
-		return res.status(200).json({
-			error: true,
-			message: err
-		});
-	});
+BooksController.editBook = async (req, res, next) => {
+    const bookCode = req.params.bookCode;
+    const updateData = req.body.update_data;
+    console.log(updateData);
+    try {
+        let book = await BookModel.findOneAndUpdate({
+            code: bookCode
+        }, updateData);
+        if (book) {
+            return res.status(200).json({
+                error: false,
+                message: "Successfully edited"
+            });
+        }
+        return res.status(200).json({
+            error: true,
+            message: "Book not found"
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
+}
+
+BooksController.deleteBook = async (req, res, next) => {
+    const bookCode = req.params.bookCode;
+    try {
+        let book = await BookModel.findOneAndDelete({
+            code: bookCode
+        });
+        console.log(book);
+        if (book) {
+            return res.status(200).json({
+                error: false,
+                message: "Successfully deleted"
+            });
+        }
+        return res.status(200).json({
+            error: true,
+            message: "Book not found"
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
 }
 
 module.exports = BooksController;

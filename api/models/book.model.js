@@ -14,6 +14,7 @@ const bookSchema = mongoose.Schema({
 	is_borrowed: Boolean,
 	borrowed_times: Number,
 	borrowed_time: Number,
+	expired_time: Number,
 	borrower: String
 });
 

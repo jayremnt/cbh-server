@@ -1,19 +1,5 @@
 const mongoose = require('mongoose');
 
-const borrowedBookSchema = mongoose.Schema({
-	code: String,
-	name: String,
-	author: String,
-	location: String,
-	borrowed_time: Number,
-	expired_time: Number,
-	extended_times: Number,
-	responsible_person: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "User"
-	},
-});
-
 const borrowerSchema = mongoose.Schema({
 	name: String,
 	class: String,
@@ -22,16 +8,18 @@ const borrowerSchema = mongoose.Schema({
 	email: String,
 	borrow_times: Number,
 	previous_borrowed_books: {
-		type: [borrowedBookSchema],
+		type: [{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Book"
+		}],
 		require: false
 	},
 	current_borrowed_books: {
-		type: [borrowedBookSchema],
+		type: [{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Book"
+		}],
 		require: true
-	},
-	responsible_person: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "User"
 	}
 });
 
