@@ -121,6 +121,7 @@ BooksController.borrowing = async (req, res, next) => {
     const borrowerId = req.body.borrowerId;
     const borrowedTime = req.body.borrowedTime;
     const expiredTime = req.body.expiredTime;
+    const responsiblePerson = req.body.responsiblePerson;
 
     try {
         let updatedBorrower = await BorrowerModel.findOneAndUpdate({
@@ -129,7 +130,7 @@ BooksController.borrowing = async (req, res, next) => {
             $push: {
                 current_borrowed_books: {
                     book: bookId,
-                    responsible_person: borrowerId
+                    responsible_person: responsiblePerson
                 }
             }
         });
