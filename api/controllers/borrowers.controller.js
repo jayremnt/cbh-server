@@ -1,6 +1,7 @@
 const borrowerModel = require('../models/borrower.model');
+let BorrowersController = {};
 
-exports.addBorrower = (req, res, next) => {
+BorrowersController.addBorrower = (req, res, next) => {
 	const borrowerInfo = req.body;
 	borrowerModel.findOne({
 		student_code: borrowerInfo.student_code
@@ -35,7 +36,7 @@ exports.addBorrower = (req, res, next) => {
 	});
 }
 
-exports.getAllBorrowers = (req, res, next) => {
+BorrowersController.getAllBorrowers = (req, res, next) => {
 	borrowerModel.find({}).populate("responsible_person").populate("current_borrowed_books.responsible_person").then(borrowers => {
 		console.log(borrowers);
 		return res.status(200).json({
@@ -54,7 +55,7 @@ exports.getAllBorrowers = (req, res, next) => {
 	});
 }
 
-exports.getBorrowerInfo = (req, res, next) => {
+BorrowersController.getBorrowerInfo = (req, res, next) => {
 	const borrowerCode = req.params.borrowerCode;
 
 	borrowerModel.findOne({
@@ -83,7 +84,7 @@ exports.getBorrowerInfo = (req, res, next) => {
 	});
 }
 
-exports.editBorrowerInfo = (req, res, next) => {
+BorrowersController.editBorrowerInfo = (req, res, next) => {
 	const borrowerCode = req.params.borrowerCode;
 	const updateData = req.body.update_data;
 	console.log(updateData);
@@ -109,7 +110,7 @@ exports.editBorrowerInfo = (req, res, next) => {
 	});
 }
 
-exports.deleteBorrower = (req, res, next) => {
+BorrowersController.deleteBorrower = (req, res, next) => {
 	const borrowerCode = req.params.borrowerCode;
 	borrowerModel.findOneAndDelete({
 		student_code: borrowerCode
@@ -132,3 +133,5 @@ exports.deleteBorrower = (req, res, next) => {
 		});
 	});
 }
+
+module.exports = BorrowersController;

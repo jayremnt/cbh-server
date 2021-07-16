@@ -1,6 +1,8 @@
 const BookModel = require("../models/book.model");
 
-exports.addBook = (req, res, next) => {
+let BooksController = {};
+
+BooksController.addBook = (req, res, next) => {
 	const bookInfo = req.body;
 	console.log(bookInfo);
 	BookModel.findOne({
@@ -36,7 +38,7 @@ exports.addBook = (req, res, next) => {
 	});
 }
 
-exports.getAvailableBooks = (req, res, next) => {
+BooksController.getAvailableBooks = (req, res, next) => {
 	BookModel.find({
 		is_borrowed: false
 	}).populate("responsible_person").then(availableBooks => {
@@ -57,7 +59,7 @@ exports.getAvailableBooks = (req, res, next) => {
 	});
 }
 
-exports.getAllBooks = (req, res, next) => {
+BooksController.getAllBooks = (req, res, next) => {
 	BookModel.find({}).populate("responsible_person").then(books => {
 		console.log(books);
 		return res.status(200).json({
@@ -76,7 +78,7 @@ exports.getAllBooks = (req, res, next) => {
 	});
 }
 
-exports.getBookDetails = (req, res, next) => {
+BooksController.getBookDetails = (req, res, next) => {
 	const bookCode = req.params.bookCode;
 	BookModel.findOne({
 		code: bookCode
@@ -98,14 +100,26 @@ exports.getBookDetails = (req, res, next) => {
 	});
 }
 
-exports.editBook = (req, res, next) => {
+BooksController.borrowing = (req, res, next) => {
+	const bookCode = req.params.bookCode;
+	const borrower = req.params.borrowerCode;
+	const borrowed_time = req.params.borrowedTime;
+
+	BookModel.findOneAndUpdate({
+		code: bookCode
+	}, {
+
+	})
+}
+
+BooksController.editBook = (req, res, next) => {
 	const bookCode = req.params.bookCode;
 	const updateData = req.body.update_data;
 	console.log(updateData);
 	BookModel.findOneAndUpdate({
 		code: bookCode
 	}, updateData).then(book => {
-		if(book) {
+		if (book) {
 			return res.status(200).json({
 				error: false,
 				message: "Successfully edited"
@@ -124,12 +138,12 @@ exports.editBook = (req, res, next) => {
 	});
 }
 
-exports.deleteBook = (req, res, next) => {
+BooksController.deleteBook = (req, res, next) => {
 	const bookCode = req.params.bookCode;
 	BookModel.findOneAndDelete({
 		code: bookCode
 	}).then(book => {
-		if(book) {
+		if (book) {
 			return res.status(200).json({
 				error: false,
 				message: "Successfully deleted"
@@ -147,3 +161,5 @@ exports.deleteBook = (req, res, next) => {
 		});
 	});
 }
+
+module.exports = BooksController;

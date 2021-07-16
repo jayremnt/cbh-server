@@ -2,8 +2,9 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const UserModel = require("../models/user.model");
+let UsersController = {};
 
-exports.register = (req, res, next) => {
+UsersController.register = (req, res, next) => {
 	console.log(req.body);
 	const registerInfo = req.body;
 	UserModel.find({
@@ -55,7 +56,7 @@ exports.register = (req, res, next) => {
 	});
 }
 
-exports.login = (req, res, next) => {
+UsersController.login = (req, res, next) => {
 	const loginInfo = req.body;
 	UserModel.find({
 		email: loginInfo.email
@@ -109,7 +110,7 @@ exports.login = (req, res, next) => {
 	});
 }
 
-exports.delete = (req, res, next) => {
+UsersController.delete = (req, res, next) => {
 	UserModel.remove({_id: req.params.userId})
 	.exec()
 	.then(result => {
@@ -126,3 +127,5 @@ exports.delete = (req, res, next) => {
 		});
 	});
 }
+
+module.exports = UsersController;
