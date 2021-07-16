@@ -154,7 +154,10 @@ BooksController.borrowing = async (req, res, next) => {
         }
         return res.status(200).json({
             error: true,
-            message: "Successfully updated"
+            message: "Successfully updated",
+            data: {
+                book: book
+            }
         });
     } catch (e) {
         console.log(e);
