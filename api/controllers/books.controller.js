@@ -109,8 +109,8 @@ BooksController.getBookDetails = async (req, res, next) => {
 }
 
 BooksController.borrowing = async (req, res, next) => {
-    const bookCode = req.data.bookCode;
-    const bookId = req.data.bookId;
+    const bookCode = req.params.bookCode;
+    const bookId = req.body.bookId;
     const isBorrowed = true;
     const borrower = req.body.borrowerId;
     const borrowedTime = req.body.borrowedTime;
@@ -170,7 +170,7 @@ BooksController.borrowing = async (req, res, next) => {
 }
 
 BooksController.returnBook = async (req, res, next) => {
-    const bookCode = req.data.bookCode;
+    const bookCode = req.params.bookCode;
     const bookId = req.body.bookId;
     const borrowerId = req.body.borrowerId;
 
