@@ -20,7 +20,7 @@ BorrowersController.addBorrower = async (req, res, next) => {
             class: borrowerInfo.class,
             student_code: borrowerInfo.student_code,
             phone_number: borrowerInfo.phone_number,
-            email: borrowerInfo.email
+            email: borrowerInfo.email,
         });
         console.log(newBorrower);
         return res.status(200).json({
@@ -65,7 +65,7 @@ BorrowersController.getBorrowerInfo = async (req, res, next) => {
     try {
         let borrowerInfo = await BorrowerModel.findOne({
             student_code: borrowerCode
-        }).populate("current_borrowed_books").populate("current_borrowed_books.responsible_person").populate("previous_borrowed_books").populate("previous_borrowed_books.responsible_person");
+        }).populate("current_borrowed_books.book").populate("current_borrowed_books.responsible_person").populate("previous_borrowed_books.book").populate("previous_borrowed_books.responsible_person");
         console.log(borrowerInfo);
         if (!borrowerInfo) {
             return res.status(200).json({
