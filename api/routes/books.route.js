@@ -10,7 +10,7 @@ router.post('/available', authJwt, BooksController.getAvailableBooks);
 router.post('/:bookCode/', authJwt, BooksController.getBookDetails);
 router.post('/:bookCode/delete', authJwt, BooksController.deleteBook);
 router.post('/:bookCode/edit', authJwt, BooksController.editBook);
-router.post('/:bookCode/borrowing', authJwt, BooksController.borrowing);
-router.post('/:bookCode/returnBook', authJwt, BooksController.returnBook);
+router.post('/borrowing', authJwt, BooksController.borrowing);
+router.post('/returnBook', authJwt, BooksController.returnBook);
 
 module.exports = router;

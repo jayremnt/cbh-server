@@ -99,49 +99,46 @@ BooksController.getBookDetails = async (req, res, next) => {
 }
 
 BooksController.borrowing = async (req, res, next) => {
-    const bookCode = req.params.bookCode;
-    const is_borrowed = true;
-    const borrower = req.body.borrowerCode;
-    const borrowed_time = req.body.borrowedTime;
-    const expired_time = req.body.expiredTime;
+    const bookId = req.data.bookId;
+    const isBorrowed = true;
+    const borrower = req.body.borrowerId;
+    const borrowedTime = req.body.borrowedTime;
+    const expiredTime = req.body.expiredTime;
+
 
     try {
-        let book = await BookModel.findOneAndUpdate({
-            code: bookCode
+        let updatedBorrower = await BorrowerModel.findOneAndUpdate({
+            _id: borrower
         }, {
-            is_borrowed,
-            borrower,
-            borrowed_time,
-            expired_time,
-            $inc: {
-                'borrowed_times': 1
+            $push: {
+                current_borrowed_books: bookId
             }
-        })
-        console.log(book);
-        if (book) {
-            let updatedBorrower = await BorrowerModel.findOneAndUpdate({
-                student_code: borrower
+        });
+        console.log(updatedBorrower);
+
+        if (updatedBorrower) {
+            console.log(updatedBorrower);
+            let book = await BookModel.findOneAndUpdate({
+                _id: bookId
             }, {
-                $push: {
-                    current_borrowed_books: book._id
+                is_borrowed: isBorrowed,
+                borrower: updatedBorrower._id,
+                borrowed_time: borrowedTime,
+                expired_time: expiredTime,
+                $inc: {
+                    'borrowed_times': 1
                 }
-            });
-
-            if (updatedBorrower) {
-                return res.status(200).json({
-                    error: false,
-                    message: "Successfully updated borrowed info"
-                })
-            }
-
+            })
+            console.log(book);
             return res.status(200).json({
-                error: false,
-                message: "Borrower not found"
+                error: true,
+                message: "Book not found"
             });
         }
+
         return res.status(200).json({
-            error: true,
-            message: "Book not found"
+            error: false,
+            message: "Borrower not found"
         });
     } catch (e) {
         console.log(e);
@@ -153,13 +150,12 @@ BooksController.borrowing = async (req, res, next) => {
 }
 
 BooksController.returnBook = async (req, res, next) => {
-    const bookCode = req.params.bookCode;
-    const borrower = req.body.borrowerCode;
-    console.log(borrower);
+    const bookId = req.body.bookId;
+    const borrowerId = req.body.borrowerId;
 
     try {
         let book = await BookModel.findOneAndUpdate({
-            code: bookCode
+            _id: bookId
         }, {
             is_borrowed: false,
             borrower: "",
@@ -168,12 +164,15 @@ BooksController.returnBook = async (req, res, next) => {
         });
         if (book) {
             let updatedBorrower = await BorrowerModel.findOneAndUpdate({
-                student_code: borrower
+                _id: borrowerId
             }, {
                 $pull: {
                     current_borrowed_books: {
-                        _id: book._id
+                        _id: bookId
                     }
+                },
+                $push: {
+                    previous_borrowed_books: bookId
                 }
             });
             if (updatedBorrower) {

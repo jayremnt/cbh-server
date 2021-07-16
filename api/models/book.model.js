@@ -7,6 +7,16 @@ const bookSchema = mongoose.Schema({
 	location: String,
 	cost: Number,
 	imported_time: Number,
+	borrowed_history: {
+		type: [{
+			borrowed_time: Number,
+			expired_time: Number,
+			borrower: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User"
+			}
+		}]
+	},
 	responsible_person: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User"
@@ -15,7 +25,10 @@ const bookSchema = mongoose.Schema({
 	borrowed_times: Number,
 	borrowed_time: Number,
 	expired_time: Number,
-	borrower: String
+	borrower: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User"
+	}
 });
 
 module.exports = mongoose.model('Book', bookSchema);

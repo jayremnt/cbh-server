@@ -1,4 +1,5 @@
 const borrowerModel = require('../models/borrower.model');
+
 let BorrowersController = {};
 
 BorrowersController.addBorrower = async (req, res, next) => {
@@ -18,7 +19,10 @@ BorrowersController.addBorrower = async (req, res, next) => {
         console.log(newBorrower);
         return res.status(200).json({
             error: false,
-            message: "Created borrower"
+            message: "Created borrower",
+            data: {
+                borrower: newBorrower
+            }
         });
     } catch (e) {
         console.log(e);
@@ -31,7 +35,7 @@ BorrowersController.addBorrower = async (req, res, next) => {
 
 BorrowersController.getAllBorrowers = async (req, res, next) => {
     try {
-        let borrowers = await borrowerModel.find({}).populate("responsible_person").populate("current_borrowed_books.responsible_person");
+        let borrowers = await borrowerModel.find({});
         console.log(borrowers);
         return res.status(200).json({
             error: false,
@@ -55,7 +59,7 @@ BorrowersController.getBorrowerInfo = async (req, res, next) => {
     try {
         let borrowerInfo = await borrowerModel.findOne({
             student_code: borrowerCode
-        }).populate("responsible_person").populate("current_borrowed_books.responsible_person");
+        }).populate("current_borrowed_books").populate("current_borrowed_books.responsible_person").populate("previous_borrowed_books").populate("previous_borrowed_books.responsible_person");
         console.log(borrowerInfo);
         if (!borrowerInfo) {
             return res.status(200).json({
