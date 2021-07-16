@@ -92,12 +92,18 @@ BooksController.getBookDetails = async (req, res, next) => {
             code: bookCode
         }).populate("responsible_person");
         console.log(bookDetails);
+        if (bookDetails) {
+            return res.status(200).json({
+                error: false,
+                message: "Successfully get book details",
+                data: {
+                    book_details: bookDetails
+                }
+            });
+        }
         return res.status(200).json({
-            error: false,
-            message: "Successfully get book details",
-            data: {
-                book_details: bookDetails
-            }
+           error: true,
+           message: "Book not found"
         });
     } catch (e) {
         console.log(e);
@@ -112,17 +118,19 @@ BooksController.borrowing = async (req, res, next) => {
     const bookCode = req.params.bookCode;
     const bookId = req.body.bookId;
     const isBorrowed = true;
-    const borrower = req.body.borrowerId;
+    const borrowerId = req.body.borrowerId;
     const borrowedTime = req.body.borrowedTime;
     const expiredTime = req.body.expiredTime;
 
-
     try {
         let updatedBorrower = await BorrowerModel.findOneAndUpdate({
-            _id: borrower
+            _id: borrowerId
         }, {
             $push: {
-                current_borrowed_books: bookId
+                current_borrowed_books: {
+                    book: bookId,
+                    responsible_person: borrowerId
+                }
             }
         });
         console.log(updatedBorrower);
@@ -134,12 +142,11 @@ BooksController.borrowing = async (req, res, next) => {
             });
         }
 
-
         let book = await BookModel.findOneAndUpdate({
             _id: bookId
         }, {
             is_borrowed: isBorrowed,
-            borrower: borrower,
+            borrower: borrowerId,
             borrowed_time: borrowedTime,
             expired_time: expiredTime,
             $inc: {
@@ -154,7 +161,7 @@ BooksController.borrowing = async (req, res, next) => {
             });
         }
         return res.status(200).json({
-            error: true,
+            error: false,
             message: "Successfully updated",
             data: {
                 book: book
