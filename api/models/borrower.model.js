@@ -24,6 +24,7 @@ const borrowerSchema = mongoose.Schema({
 	},
 	current_borrowed_books: {
 		type: [{
+			extended_times: Number,
 			borrowed_time: Number,
 			expired_time: Number,
 			book: {
