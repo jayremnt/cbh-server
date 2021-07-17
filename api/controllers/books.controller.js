@@ -54,7 +54,7 @@ BooksController.addBook = async (req, res, next) => {
 BooksController.getAvailableBooks = async (req, res, next) => {
 	try {
 		let availableBooks = await BookModel.find({
-			is_borrowed: false
+			"borrowed_info.is_borrowed": false
 		}).populate("responsible_person");
 		console.log(availableBooks);
 		return res.status(200).json({
