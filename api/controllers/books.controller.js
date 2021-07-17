@@ -181,7 +181,6 @@ BooksController.borrowing = async (req, res, next) => {
 				}
 			}
 		});
-		console.log(updatedBorrower);
 
 		if (!updatedBorrower) {
 			return res.status(200).json({
@@ -193,17 +192,15 @@ BooksController.borrowing = async (req, res, next) => {
 		let book = await BookModel.findOneAndUpdate({
 			_id: bookId
 		}, {
-			borrowed_info: {
-				is_borrowed: isBorrowed,
-				borrowed_time: borrowedTime,
-				expired_time: expiredTime,
-				borrower: borrowerId,
-				responsible_person: responsiblePerson,
-				$inc: {
-					'borrowed_times': 1
-				}
+			"borrowed_info.is_borrowed": isBorrowed,
+			"borrowed_info.borrowed_time": borrowedTime,
+			"borrowed_info.expired_time": expiredTime,
+			"borrowed_info.borrower": borrowerId,
+			"borrowed_info.responsible_person": responsiblePerson,
+			$inc: {
+				"borrowed_info.borrowed_times": 1
 			}
-		})
+		});
 		console.log(book);
 		if (!book) {
 			return res.status(200).json({
@@ -239,13 +236,19 @@ BooksController.returnBook = async (req, res, next) => {
 			code: bookCode
 		});
 		if (returnBook) {
+			if (!returnBook.borrowed_info.is_borrowed) {
+				return res.status(200).json({
+					error: true,
+					message: "Book is not borrowed"
+				});
+			}
+			console.log(returnBook);
 			let book = await BookModel.findOneAndUpdate({
 				code: bookCode
 			}, {
 				borrowed_history: returnBook.borrowed_info,
 				borrowed_info: {
 					is_borrowed: false,
-					borrower: "",
 					borrowed_time: 0,
 					expired_time: 0,
 					borrower: "",
