@@ -131,9 +131,14 @@ BooksController.getBookDetails = async (req, res, next) => {
 	try {
 		let bookDetails = await BookModel.findOne({
 			code: bookCode
-		}).populate("borrowed_info.borrower").populate("borrowed_info.responsible_person");
+		});
 		console.log(bookDetails);
 		if (bookDetails) {
+			if (bookDetails.borrowed_info.is_borrowed) {
+				bookDetails = await BookModel.findOne({
+					code: bookCode
+				}).populate("borrowed_info.borrower").populate("borrowed_info.responsible_person");
+			}
 			return res.status(200).json({
 				error: false,
 				message: "Successfully get book details",
