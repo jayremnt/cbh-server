@@ -26,24 +26,22 @@ const bookSchema = mongoose.Schema({
 		ref: "User"
 	},
 	borrowed_info: {
-		type: mongoose.Schema.Types.Mixed,
+		type: {
+			is_borrowed: Boolean,
+			borrowed_times: Number,
+			borrowed_time: Number,
+			expired_time: Number,
+			borrower: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Borrower"
+			},
+			responsible_person: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User"
+			}
+		},
 		require: true
 	}
 });
-
-bookSchema.borrowed_info = {
-	is_borrowed: Boolean,
-	borrowed_times: Number,
-	borrowed_time: Number,
-	expired_time: Number,
-	borrower: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Borrower"
-	},
-	responsible_person: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "User"
-	}
-}
 
 module.exports = mongoose.model('Book', bookSchema);
