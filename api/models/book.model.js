@@ -25,13 +25,21 @@ const bookSchema = mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User"
 	},
-	is_borrowed: Boolean,
-	borrowed_times: Number,
-	borrowed_time: Number,
-	expired_time: Number,
-	borrower: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Borrower"
+	borrowed_info: {
+		type: {
+			is_borrowed: Boolean,
+			borrowed_times: Number,
+			borrowed_time: Number,
+			expired_time: Number,
+			borrower: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "Borrower"
+			},
+			responsible_person: {
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "User"
+			}
+		}
 	}
 });
 

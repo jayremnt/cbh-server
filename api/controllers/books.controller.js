@@ -85,12 +85,41 @@ BooksController.getAllBooks = async (req, res, next) => {
     }
 }
 
+BooksController.isBorrowed = async (req, res, next) => {
+    const bookCode = req.params.bookCode;
+    try {
+        let book = await BookModel.findOne({
+            code: bookCode
+        });
+        console.log(book);
+        if (book) {
+            return res.status(200).json({
+                error: false,
+                message: "Found book",
+                data: {
+                    is_borrowed: book.borrowed_info.is_borrowed
+                }
+            });
+        }
+        return res.status(200).json({
+           error: true,
+           message: "Book not found"
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
+}
+
 BooksController.getBookDetails = async (req, res, next) => {
     const bookCode = req.params.bookCode;
     try {
         let bookDetails = await BookModel.findOne({
             code: bookCode
-        }).populate("responsible_person");
+        }).populate("borrowed_info.borrower").populate("borrowed_info.responsible_person");
         console.log(bookDetails);
         if (bookDetails) {
             return res.status(200).json({
@@ -146,12 +175,14 @@ BooksController.borrowing = async (req, res, next) => {
         let book = await BookModel.findOneAndUpdate({
             _id: bookId
         }, {
-            is_borrowed: isBorrowed,
-            borrower: borrowerId,
-            borrowed_time: borrowedTime,
-            expired_time: expiredTime,
-            $inc: {
-                'borrowed_times': 1
+            borrowed_info: {
+                is_borrowed: isBorrowed,
+                borrower: borrowerId,
+                borrowed_time: borrowedTime,
+                expired_time: expiredTime,
+                $inc: {
+                    'borrowed_times': 1
+                }
             }
         })
         console.log(book);

@@ -12,5 +12,6 @@ router.post('/:bookCode/delete', authJwt, BooksController.deleteBook);
 router.post('/:bookCode/edit', authJwt, BooksController.editBook);
 router.post('/:bookCode/borrowing', authJwt, BooksController.borrowing);
 router.post('/:bookCode/returnBook', authJwt, BooksController.returnBook);
+router.post('/:bookCode/isBorrowed', authJwt, BooksController.isBorrowed);
 
 module.exports = router;
