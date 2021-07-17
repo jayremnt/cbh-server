@@ -227,8 +227,6 @@ BooksController.borrowing = async (req, res, next) => {
 
 BooksController.returnBook = async (req, res, next) => {
 	const bookCode = req.params.bookCode;
-	const bookId = req.body.bookId;
-	const borrowerId = req.body.borrowerId;
 	const responsiblePerson = req.body.responsiblePerson;
 
 	try {
@@ -256,16 +254,16 @@ BooksController.returnBook = async (req, res, next) => {
 				}
 			});
 			let updatedBorrower = await BorrowerModel.findOneAndUpdate({
-				_id: borrowerId
+				_id: returnBook.borrowed_info.borrower
 			}, {
 				$pull: {
 					current_borrowed_books: {
-						book: bookId
+						book: returnBook._id
 					}
 				},
 				$push: {
 					previous_borrowed_books: {
-						book: bookId,
+						book: returnBook._id,
 						responsible_person: responsiblePerson
 					}
 				}
