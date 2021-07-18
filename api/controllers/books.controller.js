@@ -333,6 +333,13 @@ BooksController.extendBook = async (req, res, next) => {
 			});
 		}
 
+		if (!book.borrowed_info[0] || !book.borrowed_info[0].is_borrowed) {
+			return res.status(200).json({
+				error: true,
+				message: "Book is not borrowed"
+			});
+		}
+
 		let borrower = await BorrowerModel.findOne({
 			_id: book.borrowed_info[0].borrower
 		});
@@ -343,8 +350,8 @@ BooksController.extendBook = async (req, res, next) => {
 				message: "Borrower not found"
 			});
 		}
-		console.log(book._id);
-		console.log(borrower.current_borrowed_books[2].book);
+		// console.log(book._id);
+		// console.log(borrower.current_borrowed_books[2].book);
 
 		const extendedBookIndex = borrower.current_borrowed_books.findIndex(currentBook => currentBook.book.toString() === book._id.toString());
 		console.log(extendedBookIndex);
