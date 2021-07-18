@@ -132,7 +132,7 @@ BooksController.getBookDetails = async (req, res, next) => {
 		});
 		console.log(bookDetails);
 		if (bookDetails) {
-			if (bookDetails.borrowed_info[0].is_borrowed) {
+			if (bookDetails.borrowed_info[0] && bookDetails.borrowed_info[0].is_borrowed) {
 				bookDetails = await BookModel.findOne({
 					code: bookCode
 				}).populate("borrowed_info.borrower").populate("borrowed_info.responsible_person");
