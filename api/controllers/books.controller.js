@@ -106,7 +106,7 @@ BooksController.isBorrowed = async (req, res, next) => {
 				error: false,
 				message: "Found book",
 				data: {
-					is_borrowed: book.borrowed_info[0].is_borrowed
+					is_borrowed: book.borrowed_info[0] ? book.borrowed_info[0].is_borrowed : false
 				}
 			});
 		}
