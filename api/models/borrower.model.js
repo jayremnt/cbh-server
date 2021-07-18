@@ -9,6 +9,7 @@ const borrowerSchema = mongoose.Schema({
 	borrow_times: Number,
 	previous_borrowed_books: {
 		type: [{
+			extended_times: Number,
 			borrowed_time: Number,
 			expired_time: Number,
 			book: {

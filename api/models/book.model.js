@@ -31,6 +31,7 @@ const bookSchema = mongoose.Schema({
 			borrowed_times: Number,
 			borrowed_time: Number,
 			expired_time: Number,
+			extended_times: Number,
 			borrower: {
 				type: mongoose.Schema.Types.ObjectId,
 				ref: "Borrower"
