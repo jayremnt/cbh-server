@@ -20,7 +20,7 @@ const borrowerSchema = mongoose.Schema({
 				ref: "User"
 			}
 		}],
-		require: false
+		require: true
 	},
 	current_borrowed_books: {
 		type: [{

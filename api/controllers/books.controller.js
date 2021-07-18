@@ -24,14 +24,12 @@ BooksController.addBook = async (req, res, next) => {
 			location: bookInfo.location,
 			name: bookInfo.name,
 			responsible_person: bookInfo.responsible_person,
-			borrowed_info: {
+			borrowed_info: [{
 				is_borrowed: false,
 				borrowed_times: 0,
 				borrowed_time: 0,
-				expired_time: 0,
-				borrower: "",
-				responsible_person: ""
-			}
+				expired_time: 0
+			}]
 		});
 		console.log(newBook);
 		return res.status(200).json({
@@ -54,7 +52,7 @@ BooksController.addBook = async (req, res, next) => {
 BooksController.getAvailableBooks = async (req, res, next) => {
 	try {
 		let availableBooks = await BookModel.find({
-			"borrowed_info.is_borrowed": false
+			"borrowed_info.0.is_borrowed": false
 		}).populate("responsible_person");
 		console.log(availableBooks);
 		return res.status(200).json({
@@ -108,7 +106,7 @@ BooksController.isBorrowed = async (req, res, next) => {
 				error: false,
 				message: "Found book",
 				data: {
-					is_borrowed: book.borrowed_info.is_borrowed
+					is_borrowed: book.borrowed_info[0].is_borrowed
 				}
 			});
 		}
@@ -134,7 +132,7 @@ BooksController.getBookDetails = async (req, res, next) => {
 		});
 		console.log(bookDetails);
 		if (bookDetails) {
-			if (bookDetails.borrowed_info.is_borrowed) {
+			if (bookDetails.borrowed_info[0].is_borrowed) {
 				bookDetails = await BookModel.findOne({
 					code: bookCode
 				}).populate("borrowed_info.borrower").populate("borrowed_info.responsible_person");
@@ -192,15 +190,15 @@ BooksController.borrowing = async (req, res, next) => {
 		}
 
 		let book = await BookModel.findOneAndUpdate({
-			_id: bookId
+			code: bookCode
 		}, {
-			"borrowed_info.is_borrowed": isBorrowed,
-			"borrowed_info.borrowed_time": borrowedTime,
-			"borrowed_info.expired_time": expiredTime,
-			"borrowed_info.borrower": borrowerId,
-			"borrowed_info.responsible_person": responsiblePerson,
+			"borrowed_info.0.is_borrowed": isBorrowed,
+			"borrowed_info.0.borrowed_time": borrowedTime,
+			"borrowed_info.0.expired_time": expiredTime,
+			"borrowed_info.0.borrower": borrowerId,
+			"borrowed_info.0.responsible_person": responsiblePerson,
 			$inc: {
-				"borrowed_info.borrowed_times": 1
+				"borrowed_info.0.borrowed_times": 1
 			}
 		});
 		console.log(book);
@@ -236,7 +234,7 @@ BooksController.returnBook = async (req, res, next) => {
 			code: bookCode
 		});
 		if (returnBook) {
-			if (!returnBook.borrowed_info.is_borrowed) {
+			if (!returnBook.borrowed_info[0].is_borrowed) {
 				return res.status(200).json({
 					error: true,
 					message: "Book is not borrowed"
@@ -246,17 +244,13 @@ BooksController.returnBook = async (req, res, next) => {
 			let book = await BookModel.findOneAndUpdate({
 				code: bookCode
 			}, {
-				borrowed_history: returnBook.borrowed_info,
-				borrowed_info: {
-					is_borrowed: false,
-					borrowed_time: 0,
-					expired_time: 0,
-					borrower: "",
-					responsible_person: ""
-				}
+				$push: {
+					borrowed_history: returnBook.borrowed_info[0],
+				},
+				borrowed_info: []
 			});
 			let updatedBorrower = await BorrowerModel.findOneAndUpdate({
-				_id: returnBook.borrowed_info.borrower
+				_id: returnBook.borrowed_info[0].borrower
 			}, {
 				$pull: {
 					current_borrowed_books: {
@@ -266,8 +260,8 @@ BooksController.returnBook = async (req, res, next) => {
 				$push: {
 					previous_borrowed_books: {
 						book: returnBook._id,
-						borrowed_time: returnBook.borrowed_time,
-						expired_time: returnBook.expired_time,
+						borrowed_time: returnBook.borrowed_info[0].borrowed_time,
+						expired_time: returnBook.borrowed_info[0].expired_time,
 						responsible_person: responsiblePerson
 					}
 				}
