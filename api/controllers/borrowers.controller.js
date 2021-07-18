@@ -59,6 +59,30 @@ BorrowersController.getAllBorrowers = async (req, res, next) => {
     }
 }
 
+BorrowersController.getBorrowingBorrowers = async (req, res, next) => {
+    try {
+        let borrowers = await BorrowerModel.find({
+	        "current_borrowed_books.0": {
+	        	$exists: true
+	        }
+        });
+        console.log(borrowers);
+        return res.status(200).json({
+            error: false,
+            message: "Successfully get all borrowing borrowers",
+            data: {
+                list_borrowers: borrowers
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
+}
+
 BorrowersController.getBorrowerInfo = async (req, res, next) => {
     const borrowerCode = req.params.borrowerCode;
 

@@ -6,6 +6,7 @@ const authJwt = require('../middlewares/auth-jwt');
 
 router.post('/add', authJwt, BorrowersController.addBorrower);
 router.post('/all', authJwt, BorrowersController.getAllBorrowers);
+router.post('/borrowing', authJwt, BorrowersController.getBorrowingBorrowers);
 router.post('/:borrowerCode/', authJwt, BorrowersController.getBorrowerInfo);
 router.post('/:borrowerCode/delete', authJwt, BorrowersController.deleteBorrower);
 router.post('/:borrowerCode/edit', authJwt, BorrowersController.editBorrowerInfo);
