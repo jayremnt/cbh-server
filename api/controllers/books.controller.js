@@ -133,13 +133,13 @@ BooksController.getBookDetails = async (req, res, next) => {
 	try {
 		let bookDetails = await BookModel.findOne({
 			code: bookCode
-		});
+		}).populate("responsible_person");
 		console.log(bookDetails);
 		if (bookDetails) {
 			if (bookDetails.borrowed_info[0] && bookDetails.borrowed_info[0].is_borrowed) {
 				bookDetails = await BookModel.findOne({
 					code: bookCode
-				}).populate("borrowed_info.borrower").populate("borrowed_info.responsible_person");
+				}).populate("responsible_person").populate("borrowed_info.borrower").populate("borrowed_info.responsible_person");
 			}
 			return res.status(200).json({
 				error: false,
