@@ -177,6 +177,8 @@ BooksController.borrowing = async (req, res, next) => {
 			$push: {
 				current_borrowed_books: {
 					book: bookId,
+					borrowed_time: borrowedTime,
+					expired_time: expiredTime,
 					responsible_person: responsiblePerson
 				}
 			}
@@ -264,6 +266,8 @@ BooksController.returnBook = async (req, res, next) => {
 				$push: {
 					previous_borrowed_books: {
 						book: returnBook._id,
+						borrowed_time: returnBook.borrowed_time,
+						expired_time: returnBook.expired_time,
 						responsible_person: responsiblePerson
 					}
 				}
