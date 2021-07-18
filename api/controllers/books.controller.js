@@ -399,7 +399,7 @@ BooksController.extendBook = async (req, res, next) => {
 
 		return res.status(200).json({
 			error: false,
-			message: "Successfully updated"
+			message: "Successfully extended"
 		});
 	}
 	catch (e) {
