@@ -7,6 +7,7 @@ const borrowerSchema = mongoose.Schema({
 	phone_number: String,
 	email: String,
 	borrow_times: Number,
+	borrowed_books_amount: Number,
 	previous_borrowed_books: {
 		type: [mongoose.Schema.Types.ObjectId],
 		ref: "Trace",

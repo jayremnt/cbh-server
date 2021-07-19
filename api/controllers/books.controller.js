@@ -212,6 +212,9 @@ BooksController.borrowing = async (req, res, next) => {
 		let updatedBorrower = await BorrowerModel.findOneAndUpdate({
 			_id: borrowerId
 		}, {
+			$inc: {
+				borrowed_books_amount: 1
+			},
 			$push: {
 				current_borrowed_books: trace
 			}
@@ -418,6 +421,9 @@ BooksController.extendBook = async (req, res, next) => {
 		await BorrowerModel.updateOne({
 			_id: borrower._id
 		}, {
+			$inc: {
+				borrowed_books_amount: 1
+			},
 			$pull: {
 				current_borrowed_books: borrower.current_borrowed_books[extendedBookIndex]._id
 			},
