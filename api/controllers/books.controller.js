@@ -239,8 +239,7 @@ BooksController.borrowing = async (req, res, next) => {
 			borrowedTime: borrowedTime,
 			expiredTime: expiredTime,
 			borrower: borrowerId,
-			responsiblePerson: responsiblePerson,
-			creation_time: new Date().getTime()
+			responsiblePerson: responsiblePerson
 		});
 
 		if (!trace) {
@@ -344,8 +343,7 @@ BooksController.returnBook = async (req, res, next) => {
 			borrowedTime: returnBook.borrowed_info[0].borrowed_time,
 			expiredTime: returnBook.borrowed_info[0].expired_time,
 			borrower: borrower._id,
-			responsiblePerson: responsiblePerson,
-			creation_time: new Date().getTime()
+			responsiblePerson: responsiblePerson
 		});
 
 		if (!trace) {
@@ -447,8 +445,7 @@ BooksController.extendBook = async (req, res, next) => {
 			borrowedTime: borrowedTime,
 			expiredTime: expiredTime,
 			borrower: borrower._id,
-			responsiblePerson: responsiblePerson,
-			creation_time: new Date().getTime()
+			responsiblePerson: responsiblePerson
 		});
 
 		if (!trace) {

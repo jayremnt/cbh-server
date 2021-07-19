@@ -19,7 +19,7 @@ const TraceSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
   },
-  creation_time: Number
+  created_time: Number
 });
 
 module.exports = mongoose.model('Trace', TraceSchema);
