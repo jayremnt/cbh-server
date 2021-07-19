@@ -106,7 +106,6 @@ UsersController.login = async (req, res, next) => {
 UsersController.getAll = async (req, res, next) => {
   try {
     let users = await UserModel.find({}).select("-password");
-    ;
     res.status(200).json({
       error: false,
       message: "Successfully get all users",
