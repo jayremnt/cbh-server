@@ -215,38 +215,45 @@ UsersController.changePassword = async (req, res) => {
   const confirmPassword = req.body['confirmPassword'];
   let externalData = {};
 
-  if (!currentPassword || !newPassword || !confirmPassword) {
-    externalData.error = true;
-    externalData.message = "Chưa điền đủ mục";
-  } else if (currentPassword === newPassword) {
-    externalData.error = true;
-    externalData.message = "Mật khẩu mới trùng mật khẩu hiện tại";
-  } else if (newPassword !== confirmPassword) {
-    externalData.error = true;
-    externalData.message = "Mật khẩu mới không khớp";
-  } else {
-    const account = await UserModel.findOne({
-      _id
-    });
-    const isPasswordValid = bcrypt.compareSync(currentPassword, account.password);
-    if (isPasswordValid) {
-      try {
-        await UserModel.updateOne({
-          _id: _id
-        }, {
-          password: bcrypt.hashSync(newPassword, 10)
-        });
-
-        externalData.error = false;
-        externalData.message = "Đổi mật khẩu thành công";
-      } catch (e) {
-        externalData.error = true;
-        externalData.message = "Đã có lỗi xảy ra";
-      }
-    } else {
+  try {
+    if (!currentPassword || !newPassword || !confirmPassword) {
       externalData.error = true;
-      externalData.message = "Mật khẩu cũ không hợp lệ";
+      externalData.message = "Chưa điền đủ mục";
+    } else if (currentPassword === newPassword) {
+      externalData.error = true;
+      externalData.message = "Mật khẩu mới trùng mật khẩu hiện tại";
+    } else if (newPassword !== confirmPassword) {
+      externalData.error = true;
+      externalData.message = "Mật khẩu mới không khớp";
+    } else {
+      const account = await UserModel.findOne({
+        _id
+      });
+      const isPasswordValid = bcrypt.compareSync(currentPassword, account.password);
+      if (isPasswordValid) {
+        try {
+          await UserModel.updateOne({
+            _id: _id
+          }, {
+            password: bcrypt.hashSync(newPassword, 10)
+          });
+
+          externalData.error = false;
+          externalData.message = "Đổi mật khẩu thành công";
+        } catch (e) {
+          externalData.error = true;
+          externalData.message = "Đã có lỗi xảy ra";
+        }
+      } else {
+        externalData.error = true;
+        externalData.message = "Mật khẩu cũ không hợp lệ";
+      }
     }
+  }
+  catch(e) {
+    console.log(e);
+    externalData.error = true;
+    externalData.message = "Có lỗi xảy ra";
   }
 
   return res.status(200).json(externalData);
