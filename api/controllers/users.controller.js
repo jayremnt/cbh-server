@@ -38,6 +38,7 @@ UsersController.register = async (req, res, next) => {
           password: hash,
           role: registerInfo.role,
           name: registerInfo.name,
+          creation_time: new Date().getTime()
         });
         console.log(newUser);
         res.status(200).json({
