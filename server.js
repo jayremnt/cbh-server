@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 app.use('/users', usersRoutes);
 app.use('/books', booksRoutes);
 app.use('/borrowers', borrowersRoutes);
-app.use('/alive/', authJwt, (req, res, next) => {
+app.use('/alive/', authJwt.authenticate, (req, res, next) => {
 	res.status(200).json({
 		error: false,
 		message: "Token validated",
