@@ -192,7 +192,7 @@ BooksController.getBookTrace = async (req, res, next) => {
             error: false,
             message: "Successfully get book trace",
             data: {
-                book: bookInfo.borrowed_history
+                trace: bookInfo.borrowed_history
             }
         });
     } catch (e) {
