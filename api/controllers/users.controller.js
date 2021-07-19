@@ -6,11 +6,19 @@ let UsersController = {};
 
 UsersController.register = async (req, res, next) => {
   console.log(req.body);
+  if (!validateEmail(req.body.email)) {
+    return res.status(200).json({
+      error: true,
+      message: "Invalid email address"
+    });
+  }
+
   const registerInfo = req.body;
   try {
     let user = await UserModel.find({
       email: registerInfo.email
     });
+
     if (user.length >= 1) {
       return res.status(200).json({
         error: true,
@@ -199,6 +207,11 @@ UsersController.delete = async (req, res, next) => {
       message: "Error occurred"
     });
   }
+}
+
+function validateEmail(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
 }
 
 module.exports = UsersController;
