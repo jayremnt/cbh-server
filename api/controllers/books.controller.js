@@ -474,7 +474,7 @@ BooksController.extendBook = async (req, res, next) => {
 				current_borrowed_books: borrower.current_borrowed_books[extendedBookIndex]._id
 			},
 			$push: {
-				previous_borrowed_books: borrower.current_borrowed_books[extendedBookIndex]._id
+				previous_borrowed_books: trace._id
 			}
 		});
 
