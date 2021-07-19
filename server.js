@@ -10,7 +10,7 @@ const booksRoutes = require('./api/routes/books.route');
 const borrowersRoutes = require('./api/routes/borrowers.route');
 
 // mongoose connect
-mongoose.connect(`mongodb+srv://JayremntB:${process.env.DB_PW}@cluster0.nx3tc.mongodb.net/test`, {
+	mongoose.connect(`mongodb+srv://JayremntB:${process.env.DB_PW}@cluster0.nx3tc.mongodb.net/test`, {
 	useNewUrlParser: true,
 	useUnifiedTopology: true
 });

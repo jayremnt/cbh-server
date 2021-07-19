@@ -256,7 +256,8 @@ BooksController.borrowing = async (req, res, next) => {
 				borrowed_books_amount: 1
 			},
 			$push: {
-				current_borrowed_books: trace._id
+				current_borrowed_books: trace._id,
+				previous_borrowed_books: trace._id
 			}
 		});
 
@@ -273,6 +274,7 @@ BooksController.borrowing = async (req, res, next) => {
 			"borrowed_info.0.is_borrowed": isBorrowed,
 			"borrowed_info.0.borrowed_time": borrowedTime,
 			"borrowed_info.0.expired_time": expiredTime,
+			"borrowed_info.0.extended_times": 0,
 			"borrowed_info.0.borrower": borrowerId,
 			"borrowed_info.0.responsible_person": responsiblePerson,
 			$inc: {
@@ -338,6 +340,7 @@ BooksController.returnBook = async (req, res, next) => {
 
 		const returnedBookIndex = borrower.current_borrowed_books.findIndex(currentBook => currentBook.book.toString() === returnBook._id.toString());
 		console.log(returnedBookIndex);
+		console.log(returnBook.borrowed_info[0]);
 
 		let trace = await TraceController.createTrace({
 			bookId: returnBook._id,
