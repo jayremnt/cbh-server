@@ -163,7 +163,7 @@ UsersController.getUserInfo = async (req, res, next) => {
 }
 
 UsersController.edit = async (req, res, next) => {
-  const userId = req.params.userId;
+  const userId = req.body.userId;
   let updateData = req.body.updateData;
 
   try {
