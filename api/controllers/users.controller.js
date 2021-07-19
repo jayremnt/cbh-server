@@ -165,28 +165,27 @@ UsersController.edit = async (req, res, next) => {
   const userId = req.params.userId;
   let updateData = req.body.updateData;
 
-	try {
-		let user = await UserModel.findOneAndUpdate({
-			_id: userId
-		}, updateData);
-		if (user) {
-			return res.status(200).json({
-				error: false,
-				message: "Successfully edited"
-			});
-		}
-		return res.status(200).json({
-			error: true,
-			message: "User not found"
-		});
-	}
-	catch (e) {
-		console.log(e);
-		return res.status(200).json({
-			error: true,
-			message: "Error occurred"
-		});
-	}
+  try {
+    let user = await UserModel.findOneAndUpdate({
+      _id: userId
+    }, updateData);
+    if (user) {
+      return res.status(200).json({
+        error: false,
+        message: "Successfully edited"
+      });
+    }
+    return res.status(200).json({
+      error: true,
+      message: "User not found"
+    });
+  } catch (e) {
+    console.log(e);
+    return res.status(200).json({
+      error: true,
+      message: "Error occurred"
+    });
+  }
 }
 
 UsersController.delete = async (req, res, next) => {
@@ -209,9 +208,53 @@ UsersController.delete = async (req, res, next) => {
   }
 }
 
+UsersController.changePassword = async (req, res) => {
+  const _id = req.body['userId'];
+  const currentPassword = req.body['currentPassword'];
+  const newPassword = req.body['newPassword'];
+  const confirmPassword = req.body['confirmPassword'];
+  let externalData = {};
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    externalData.error = true;
+    externalData.message = "Chưa điền đủ mục";
+  } else if (currentPassword === newPassword) {
+    externalData.error = true;
+    externalData.message = "Mật khẩu mới trùng mật khẩu hiện tại";
+  } else if (newPassword !== confirmPassword) {
+    externalData.error = true;
+    externalData.message = "Mật khẩu mới không khớp";
+  } else {
+    const account = await UserModel.findOne({
+      _id
+    });
+    const isPasswordValid = bcrypt.compareSync(currentPassword, account.password);
+    if (isPasswordValid) {
+      try {
+        await UserModel.updateOne({
+          _id: _id
+        }, {
+          password: bcrypt.hashSync(newPassword, 10)
+        });
+
+        externalData.error = false;
+        externalData.message = "Đổi mật khẩu thành công";
+      } catch (e) {
+        externalData.error = true;
+        externalData.message = "Đã có lỗi xảy ra";
+      }
+    } else {
+      externalData.error = true;
+      externalData.message = "Mật khẩu cũ không hợp lệ";
+    }
+  }
+
+  return res.status(200).json(externalData);
+}
+
 function validateEmail(email) {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(String(email).toLowerCase());
 }
 
 module.exports = UsersController;

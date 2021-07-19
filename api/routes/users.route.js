@@ -6,6 +6,7 @@ const UsersController = require('../controllers/users.controller');
 
 router.post('/register', UsersController.register);
 router.post('/login', UsersController.login);
+router.post('/changePassword', authJwt.authenticate, UsersController.changePassword);
 router.post('/all', authJwt.authenticate, authJwt.isAdmin, UsersController.getAll);
 router.post('/info', authJwt.authenticate, authJwt.isAdmin, UsersController.getUserInfo);
 router.post('/register', authJwt.authenticate, authJwt.isAdmin, UsersController.register);
