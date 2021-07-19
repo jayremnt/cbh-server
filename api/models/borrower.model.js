@@ -8,35 +8,13 @@ const borrowerSchema = mongoose.Schema({
 	email: String,
 	borrow_times: Number,
 	previous_borrowed_books: {
-		type: [{
-			extended_times: Number,
-			borrowed_time: Number,
-			expired_time: Number,
-			book: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "Book"
-			},
-			responsible_person: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "User"
-			}
-		}],
+		type: [mongoose.Schema.Types.ObjectId],
+		ref: "Trace",
 		require: true
 	},
 	current_borrowed_books: {
-		type: [{
-			extended_times: Number,
-			borrowed_time: Number,
-			expired_time: Number,
-			book: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "Book"
-			},
-			responsible_person: {
-				type: mongoose.Schema.Types.ObjectId,
-				ref: "User"
-			}
-		}],
+		type: [mongoose.Schema.Types.ObjectId],
+		ref: "Trace",
 		require: true
 	}
 });

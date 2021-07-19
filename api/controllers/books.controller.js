@@ -1,5 +1,6 @@
 const BookModel = require("../models/book.model");
 const BorrowerModel = require("../models/borrower.model");
+const TraceController = require("./trace.controller");
 
 let BooksController = {};
 
@@ -191,17 +192,28 @@ BooksController.borrowing = async (req, res, next) => {
 			})
 		}
 
+		let trace = await TraceController.createTrace({
+			bookId: book._id,
+			isBorrowing: true,
+			extendedTimes: 0,
+			borrowedTime: borrowedTime,
+			expiredTime: expiredTime,
+			borrower: borrowerId,
+			responsiblePerson: responsiblePerson
+		});
+
+		if (!trace) {
+			return res.status(200).json({
+				error: true,
+				message: "Could not create trace"
+			})
+		}
+
 		let updatedBorrower = await BorrowerModel.findOneAndUpdate({
 			_id: borrowerId
 		}, {
 			$push: {
-				current_borrowed_books: {
-					book: book._id,
-					borrowed_time: borrowedTime,
-					expired_time: expiredTime,
-					extended_times: 0,
-					responsible_person: responsiblePerson
-				}
+				current_borrowed_books: trace
 			}
 		});
 
@@ -265,11 +277,44 @@ BooksController.returnBook = async (req, res, next) => {
 			});
 		}
 
+		let borrower = await BorrowerModel.findOne({
+			_id: returnBook.borrowed_info[0].borrower
+		}).populate("current_borrowed_books");
+
+		if (!borrower) {
+			return res.status(200).json({
+				error: true,
+				message: "Borrower not found"
+			});
+		}
+		// console.log(book._id);
+		// console.log(borrower.current_borrowed_books[2].book);
+
+		const returnedBookIndex = borrower.current_borrowed_books.findIndex(currentBook => currentBook.book.toString() === returnBook._id.toString());
+		console.log(returnedBookIndex);
+
+		let trace = await TraceController.createTrace({
+			bookId: returnBook._id,
+			isReturn: true,
+			extendedTimes: returnBook.borrowed_info[0].extended_times,
+			borrowedTime: returnBook.borrowed_info[0].borrowed_time,
+			expiredTime: returnBook.borrowed_info[0].expired_time,
+			borrower: borrower._id,
+			responsiblePerson: responsiblePerson
+		});
+
+		if (!trace) {
+			return res.status(200).json({
+				error: true,
+				message: "Could not create trace"
+			});
+		}
+
 		await BookModel.updateOne({
 			code: bookCode
 		}, {
 			$push: {
-				borrowed_history: returnBook.borrowed_info[0],
+				borrowed_history: trace._id,
 			},
 			borrowed_info: []
 		});
@@ -278,18 +323,10 @@ BooksController.returnBook = async (req, res, next) => {
 			_id: returnBook.borrowed_info[0].borrower
 		}, {
 			$pull: {
-				current_borrowed_books: {
-					book: returnBook._id
-				}
+				current_borrowed_books: borrower.current_borrowed_books[returnedBookIndex]._id
 			},
 			$push: {
-				previous_borrowed_books: {
-					book: returnBook._id,
-					borrowed_time: returnBook.borrowed_info[0].borrowed_time,
-					expired_time: returnBook.borrowed_info[0].expired_time,
-					extended_times: returnBook.borrowed_info[0].extended_times,
-					responsible_person: responsiblePerson
-				}
+				previous_borrowed_books: trace._id
 			}
 		});
 
@@ -342,7 +379,9 @@ BooksController.extendBook = async (req, res, next) => {
 
 		let borrower = await BorrowerModel.findOne({
 			_id: book.borrowed_info[0].borrower
-		});
+		}).populate("current_borrowed_books");
+
+		console.log(borrower);
 
 		if (!borrower) {
 			return res.status(200).json({
@@ -356,31 +395,42 @@ BooksController.extendBook = async (req, res, next) => {
 		const extendedBookIndex = borrower.current_borrowed_books.findIndex(currentBook => currentBook.book.toString() === book._id.toString());
 		console.log(extendedBookIndex);
 
+		let trace = await TraceController.createTrace({
+			bookId: book._id,
+			isExtend: true,
+			extendedTimes: borrower.current_borrowed_books[extendedBookIndex].extended_times + 1,
+			borrowedTime: borrowedTime,
+			expiredTime: expiredTime,
+			borrower: borrower._id,
+			responsiblePerson: responsiblePerson
+		});
+
+		if (!trace) {
+			return res.status(200).json({
+				error: true,
+				message: "Could not create trace"
+			})
+		}
+
+		console.log(trace);
+		console.log(borrower.current_borrowed_books[extendedBookIndex]._id);
+
 		await BorrowerModel.updateOne({
 			_id: borrower._id
 		}, {
 			$pull: {
-				"current_borrowed_books": {
-					book: book._id
-				}
+				current_borrowed_books: borrower.current_borrowed_books[extendedBookIndex]._id
 			},
 			$push: {
-				previous_borrowed_books: borrower.current_borrowed_books[extendedBookIndex]
+				previous_borrowed_books: borrower.current_borrowed_books[extendedBookIndex]._id
 			}
 		});
 
-		console.log(borrower.current_borrowed_books[extendedBookIndex]);
 		await BorrowerModel.updateOne({
 			_id: borrower._id
 		}, {
 			$push: {
-				current_borrowed_books: {
-					book: book._id,
-					borrowed_time: borrowedTime,
-					expired_time: expiredTime,
-					extended_times: borrower.current_borrowed_books[extendedBookIndex].extended_times + 1,
-					responsible_person: responsiblePerson
-				}
+				current_borrowed_books: trace._id
 			}
 		});
 
@@ -397,7 +447,7 @@ BooksController.extendBook = async (req, res, next) => {
 				"borrowed_info.0.extended_times": 1
 			},
 			$push: {
-				borrowed_history: book.borrowed_info[0]
+				borrowed_history: trace._id
 			}
 		});
 

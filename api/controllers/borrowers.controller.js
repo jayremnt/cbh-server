@@ -89,7 +89,17 @@ BorrowersController.getBorrowerInfo = async (req, res, next) => {
     try {
         let borrowerInfo = await BorrowerModel.findOne({
             student_code: borrowerCode
-        }).populate("current_borrowed_books.book").populate("current_borrowed_books.responsible_person").populate("previous_borrowed_books.book").populate("previous_borrowed_books.responsible_person");
+        }).populate({
+            path: "current_borrowed_books",
+            populate: {
+                path: "book"
+            }
+        }).populate({
+            path: "current_borrowed_books",
+            populate: {
+                path: "responsible_person"
+            }
+        });
         console.log(borrowerInfo);
         if (!borrowerInfo) {
             return res.status(200).json({
