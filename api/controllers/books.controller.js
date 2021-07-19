@@ -256,7 +256,7 @@ BooksController.borrowing = async (req, res, next) => {
 				borrowed_books_amount: 1
 			},
 			$push: {
-				current_borrowed_books: trace
+				current_borrowed_books: trace._id
 			}
 		});
 
@@ -277,6 +277,9 @@ BooksController.borrowing = async (req, res, next) => {
 			"borrowed_info.0.responsible_person": responsiblePerson,
 			$inc: {
 				borrowed_times: 1
+			},
+			$push: {
+				borrowed_history: trace._id,
 			}
 		});
 
