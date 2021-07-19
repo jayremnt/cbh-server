@@ -24,9 +24,9 @@ BooksController.addBook = async (req, res, next) => {
 			location: bookInfo.location,
 			name: bookInfo.name,
 			responsible_person: bookInfo.responsible_person,
+			borrowed_times: 0,
 			borrowed_info: [{
 				is_borrowed: false,
-				borrowed_times: 0,
 				borrowed_time: 0,
 				expired_time: 0
 			}]
@@ -221,7 +221,7 @@ BooksController.borrowing = async (req, res, next) => {
 			"borrowed_info.0.borrower": borrowerId,
 			"borrowed_info.0.responsible_person": responsiblePerson,
 			$inc: {
-				"borrowed_info.0.borrowed_times": 1
+				borrowed_times: 1
 			}
 		});
 
@@ -369,6 +369,7 @@ BooksController.extendBook = async (req, res, next) => {
 			}
 		});
 
+		console.log(borrower.current_borrowed_books[extendedBookIndex]);
 		await BorrowerModel.updateOne({
 			_id: borrower._id
 		}, {
@@ -392,8 +393,11 @@ BooksController.extendBook = async (req, res, next) => {
 			"borrowed_info.0.expired_time": expiredTime,
 			"borrowed_info.0.responsible_person": responsiblePerson,
 			$inc: {
-				"borrowed_info.0.borrowed_times": 1,
+				borrowed_times: 1,
 				"borrowed_info.0.extended_times": 1
+			},
+			$push: {
+				borrowed_history: book.borrowed_info[0]
 			}
 		});
 

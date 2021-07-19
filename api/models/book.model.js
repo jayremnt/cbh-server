@@ -7,8 +7,10 @@ const bookSchema = mongoose.Schema({
 	location: String,
 	cost: Number,
 	imported_time: Number,
+	borrowed_times: Number,
 	borrowed_history: {
 		type: [{
+			extended_times: Number,
 			borrowed_time: Number,
 			expired_time: Number,
 			borrower: {
@@ -28,7 +30,6 @@ const bookSchema = mongoose.Schema({
 	borrowed_info: {
 		type: [{
 			is_borrowed: Boolean,
-			borrowed_times: Number,
 			borrowed_time: Number,
 			expired_time: Number,
 			extended_times: Number,
