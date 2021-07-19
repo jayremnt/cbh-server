@@ -144,7 +144,7 @@ UsersController.getUserInfo = async (req, res, next) => {
         error: false,
         message: "Successfully get user info",
         data: {
-          users: user
+          user: user
         }
       });
     }
