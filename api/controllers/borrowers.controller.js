@@ -123,6 +123,46 @@ BorrowersController.getBorrowerInfo = async (req, res, next) => {
     }
 }
 
+BorrowersController.getBorrowerTrace = async (req, res, next) => {
+    const borrowerCode = req.params.borrowerCode;
+
+    try {
+        let borrowerInfo = await BorrowerModel.findOne({
+            student_code: borrowerCode
+        }).populate({
+            path: "previous_borrowed_books",
+            populate: {
+                path: "book"
+            }
+        }).populate({
+            path: "previous_borrowed_books",
+            populate: {
+                path: "responsible_person"
+            }
+        });
+        // console.log(borrowerInfo);
+        if (!borrowerInfo) {
+            return res.status(200).json({
+                error: true,
+                message: "Borrower not found"
+            });
+        }
+        return res.status(200).json({
+            error: false,
+            message: "Successfully get borrower trace",
+            data: {
+                trace: borrowerInfo.previous_borrowed_books
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
+}
+
 BorrowersController.editBorrowerInfo = async (req, res, next) => {
     const borrowerCode = req.params.borrowerCode;
     const updateData = req.body.update_data;

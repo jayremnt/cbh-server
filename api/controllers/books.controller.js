@@ -164,6 +164,46 @@ BooksController.getBookDetails = async (req, res, next) => {
 	}
 }
 
+BooksController.getBookTrace = async (req, res, next) => {
+    const bookCode = req.params.bookCode;
+
+    try {
+        let bookInfo = await BookModel.findOne({
+            code: bookCode
+        }).populate({
+            path: "borrowed_history",
+            populate: {
+                path: "borrower"
+            }
+        }).populate({
+            path: "borrowed_history",
+            populate: {
+                path: "responsible_person"
+            }
+        });
+
+        if (!bookInfo) {
+            return res.status(200).json({
+                error: true,
+                message: "Book not found"
+            });
+        }
+        return res.status(200).json({
+            error: false,
+            message: "Successfully get book trace",
+            data: {
+                book: bookInfo.borrowed_history
+            }
+        });
+    } catch (e) {
+        console.log(e);
+        return res.status(200).json({
+            error: true,
+            message: "Error occurred"
+        });
+    }
+}
+
 BooksController.borrowing = async (req, res, next) => {
 	const bookCode = req.params.bookCode;
 	const borrowerId = req.body.borrowerId;
@@ -199,7 +239,8 @@ BooksController.borrowing = async (req, res, next) => {
 			borrowedTime: borrowedTime,
 			expiredTime: expiredTime,
 			borrower: borrowerId,
-			responsiblePerson: responsiblePerson
+			responsiblePerson: responsiblePerson,
+			creation_time: new Date().getTime()
 		});
 
 		if (!trace) {
@@ -303,7 +344,8 @@ BooksController.returnBook = async (req, res, next) => {
 			borrowedTime: returnBook.borrowed_info[0].borrowed_time,
 			expiredTime: returnBook.borrowed_info[0].expired_time,
 			borrower: borrower._id,
-			responsiblePerson: responsiblePerson
+			responsiblePerson: responsiblePerson,
+			creation_time: new Date().getTime()
 		});
 
 		if (!trace) {
@@ -405,7 +447,8 @@ BooksController.extendBook = async (req, res, next) => {
 			borrowedTime: borrowedTime,
 			expiredTime: expiredTime,
 			borrower: borrower._id,
-			responsiblePerson: responsiblePerson
+			responsiblePerson: responsiblePerson,
+			creation_time: new Date().getTime()
 		});
 
 		if (!trace) {

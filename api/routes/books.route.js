@@ -11,6 +11,7 @@ router.post('/:bookCode/', authJwt.authenticate, BooksController.getBookDetails)
 router.post('/:bookCode/delete', authJwt.authenticate, BooksController.deleteBook);
 router.post('/:bookCode/edit', authJwt.authenticate, BooksController.editBook);
 router.post('/:bookCode/borrowing', authJwt.authenticate, BooksController.borrowing);
+router.post('/:bookCode/trace', authJwt.authenticate, BooksController.getBookTrace);
 router.post('/:bookCode/returnBook', authJwt.authenticate, BooksController.returnBook);
 router.post('/:bookCode/extendBook', authJwt.authenticate, BooksController.extendBook);
 router.post('/:bookCode/isBorrowed', authJwt.authenticate, BooksController.isBorrowed);

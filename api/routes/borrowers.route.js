@@ -10,5 +10,6 @@ router.post('/borrowing', authJwt.authenticate, BorrowersController.getBorrowing
 router.post('/:borrowerCode/', authJwt.authenticate, BorrowersController.getBorrowerInfo);
 router.post('/:borrowerCode/delete', authJwt.authenticate, BorrowersController.deleteBorrower);
 router.post('/:borrowerCode/edit', authJwt.authenticate, BorrowersController.editBorrowerInfo);
+router.post('/:borrowerCode/trace', authJwt.authenticate, BorrowersController.getBorrowerTrace);
 
 module.exports = router;
