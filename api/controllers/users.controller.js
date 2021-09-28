@@ -167,13 +167,19 @@ UsersController.edit = async (req, res, next) => {
   let updateData = req.body.updateData;
 
   try {
-    let user = await UserModel.findOneAndUpdate({
+    let user = updateData.password ? await UserModel.findOneAndUpdate({
       _id: userId
     }, {
       name: updateData.name,
       email: updateData.email,
       role: updateData.role,
       password: bcrypt.hashSync(updateData.password, 10)
+    }) : await UserModel.findOneAndUpdate({
+      _id: userId
+    }, {
+      name: updateData.name,
+      email: updateData.email,
+      role: updateData.role
     });
     if (user) {
       return res.status(200).json({
