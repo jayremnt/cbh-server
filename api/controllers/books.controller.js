@@ -458,7 +458,7 @@ BooksController.extendBook = async (req, res, next) => {
 			return res.status(200).json({
 				error: true,
 				message: "Could not create trace"
-			})
+			});
 		}
 
 		console.log(trace);
@@ -467,9 +467,6 @@ BooksController.extendBook = async (req, res, next) => {
 		await BorrowerModel.updateOne({
 			_id: borrower._id
 		}, {
-			$inc: {
-				borrowed_books_amount: 1
-			},
 			$pull: {
 				current_borrowed_books: borrower.current_borrowed_books[extendedBookIndex]._id
 			},
@@ -495,7 +492,6 @@ BooksController.extendBook = async (req, res, next) => {
 			"borrowed_info.0.expired_time": expiredTime,
 			"borrowed_info.0.responsible_person": responsiblePerson,
 			$inc: {
-				borrowed_times: 1,
 				"borrowed_info.0.extended_times": 1
 			},
 			$push: {
