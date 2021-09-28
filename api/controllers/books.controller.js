@@ -100,10 +100,10 @@ BooksController.getAllBooks = async (req, res, next) => {
 }
 
 BooksController.isBorrowed = async (req, res, next) => {
-	const bookId = req.params.bookId;
+	const bookCode = req.params.bookCode;
 	try {
 		let book = await BookModel.findOne({
-			_id: bookId
+			code: bookCode
 		});
 		console.log(book);
 		if (book) {
@@ -130,16 +130,16 @@ BooksController.isBorrowed = async (req, res, next) => {
 }
 
 BooksController.getBookDetails = async (req, res, next) => {
-	const bookId = req.params.bookId;
+	const bookCode = req.params.bookCode;
 	try {
 		let bookDetails = await BookModel.findOne({
-			_id: bookId
+			code: bookCode
 		}).populate("responsible_person");
 		console.log(bookDetails);
 		if (bookDetails) {
 			if (bookDetails.borrowed_info[0] && bookDetails.borrowed_info[0].is_borrowed) {
 				bookDetails = await BookModel.findOne({
-					_id: bookId
+					code: bookCode
 				}).populate("responsible_person").populate("borrowed_info.borrower").populate("borrowed_info.responsible_person");
 			}
 			return res.status(200).json({
@@ -165,11 +165,11 @@ BooksController.getBookDetails = async (req, res, next) => {
 }
 
 BooksController.getBookTrace = async (req, res, next) => {
-    const bookId = req.params.bookId;
+    const bookCode = req.params.bookCode;
 
     try {
         let bookInfo = await BookModel.findOne({
-            _id: bookId
+            code: bookCode
         }).populate({
             path: "borrowed_history",
             populate: {
@@ -205,7 +205,7 @@ BooksController.getBookTrace = async (req, res, next) => {
 }
 
 BooksController.borrowing = async (req, res, next) => {
-	const bookId = req.params.bookId;
+	const bookCode = req.params.bookCode;
 	const borrowerId = req.body.borrowerId;
 	const borrowedTime = req.body.borrowedTime;
 	const expiredTime = req.body.expiredTime;
@@ -215,7 +215,7 @@ BooksController.borrowing = async (req, res, next) => {
 
 	try {
 		let book = await BookModel.findOne({
-			_id: bookId
+			code: bookCode
 		});
 
 		if (!book) {
@@ -269,7 +269,7 @@ BooksController.borrowing = async (req, res, next) => {
 		}
 
 		let updatedBook = await BookModel.findOneAndUpdate({
-			_id: bookId
+			code: bookCode
 		}, {
 			"borrowed_info.0.is_borrowed": isBorrowed,
 			"borrowed_info.0.borrowed_time": borrowedTime,
@@ -303,12 +303,12 @@ BooksController.borrowing = async (req, res, next) => {
 }
 
 BooksController.returnBook = async (req, res, next) => {
-	const bookId = req.params.bookId;
+	const bookCode = req.params.bookCode;
 	const responsiblePerson = req.body.responsiblePerson;
 
 	try {
 		let returnBook = await BookModel.findOne({
-			_id: bookId
+			code: bookCode
 		});
 
 		if (!returnBook) {
@@ -360,7 +360,7 @@ BooksController.returnBook = async (req, res, next) => {
 		}
 
 		await BookModel.updateOne({
-			_id: bookId
+			code: bookCode
 		}, {
 			$push: {
 				borrowed_history: trace._id,
@@ -401,7 +401,7 @@ BooksController.returnBook = async (req, res, next) => {
 }
 
 BooksController.extendBook = async (req, res, next) => {
-	const bookId = req.params.bookId;
+	const bookCode = req.params.bookCode;
 	const isBorrowed = true;
 	const borrowedTime = req.body.borrowedTime;
 	const expiredTime = req.body.expiredTime;
@@ -409,7 +409,7 @@ BooksController.extendBook = async (req, res, next) => {
 
 	try {
 		let book = await BookModel.findOne({
-			_id: bookId
+			code: bookCode
 		});
 
 		if (!book) {
@@ -487,7 +487,7 @@ BooksController.extendBook = async (req, res, next) => {
 		});
 
 		await BookModel.findOneAndUpdate({
-			_id: bookId
+			code: bookCode
 		}, {
 			"borrowed_info.0.is_borrowed": isBorrowed,
 			"borrowed_info.0.borrower": borrower._id,
@@ -518,12 +518,12 @@ BooksController.extendBook = async (req, res, next) => {
 }
 
 BooksController.editBook = async (req, res, next) => {
-	const bookId = req.params.bookId;
+	const bookCode = req.params.bookCode;
 	const updateData = req.body.update_data;
 	console.log(updateData);
 	try {
 		let book = await BookModel.findOneAndUpdate({
-			_id: bookId
+			code: bookCode
 		}, updateData);
 		if (book) {
 			return res.status(200).json({
@@ -546,10 +546,10 @@ BooksController.editBook = async (req, res, next) => {
 }
 
 BooksController.deleteBook = async (req, res, next) => {
-	const bookId = req.params.bookId;
+	const bookCode = req.params.bookCode;
 	try {
 		let book = await BookModel.findOneAndDelete({
-			_id: bookId
+			code: bookCode
 		});
 		console.log(book);
 		if (book) {
