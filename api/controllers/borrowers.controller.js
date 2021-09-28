@@ -84,11 +84,11 @@ BorrowersController.getBorrowingBorrowers = async (req, res, next) => {
 }
 
 BorrowersController.getBorrowerInfo = async (req, res, next) => {
-    const borrowerCode = req.params.borrowerCode;
+    const borrowerId = req.params.borrowerId;
 
     try {
         let borrowerInfo = await BorrowerModel.findOne({
-            student_code: borrowerCode
+            _id: borrowerId
         }).populate({
             path: "current_borrowed_books",
             populate: {
@@ -124,11 +124,11 @@ BorrowersController.getBorrowerInfo = async (req, res, next) => {
 }
 
 BorrowersController.getBorrowerTrace = async (req, res, next) => {
-    const borrowerCode = req.params.borrowerCode;
+    const borrowerId = req.params.borrowerId;
 
     try {
         let borrowerInfo = await BorrowerModel.findOne({
-            student_code: borrowerCode
+            _id: borrowerId
         }).populate({
             path: "previous_borrowed_books",
             populate: {
@@ -164,13 +164,13 @@ BorrowersController.getBorrowerTrace = async (req, res, next) => {
 }
 
 BorrowersController.editBorrowerInfo = async (req, res, next) => {
-    const borrowerCode = req.params.borrowerCode;
+    const borrowerId = req.params.borrowerId;
     const updateData = req.body.update_data;
     console.log(updateData);
 
     try {
         let book = await BorrowerModel.findOneAndUpdate({
-            student_code: borrowerCode
+            _id: borrowerId
         }, updateData);
         if (book) {
             return res.status(200).json({
@@ -192,10 +192,10 @@ BorrowersController.editBorrowerInfo = async (req, res, next) => {
 }
 
 BorrowersController.deleteBorrower = async (req, res, next) => {
-    const borrowerCode = req.params.borrowerCode;
+    const borrowerId = req.params.borrowerId;
     try {
         let borrower = await BorrowerModel.findOneAndDelete({
-            student_code: borrowerCode
+            _id: borrowerId
         });
         if (borrower) {
             return res.status(200).json({
