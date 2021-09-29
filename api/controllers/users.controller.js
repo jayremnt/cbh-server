@@ -58,11 +58,13 @@ UsersController.register = async (req, res, next) => {
 
 UsersController.login = async (req, res, next) => {
   const loginInfo = req.body;
+  console.log(loginInfo);
   try {
     let user = await UserModel.find({
       email: loginInfo.email
     });
     if (user.length < 1) {
+      console.log("Not found user");
       return res.status(200).json({
         error: true,
         message: "Login failed"
