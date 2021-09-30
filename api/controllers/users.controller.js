@@ -152,7 +152,7 @@ UsersController.getUserInfo = async (req, res, next) => {
     }
 
     return res.status(200).json({
-      error: false,
+      error: true,
       message: "User not found"
     });
   } catch (e) {
