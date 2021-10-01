@@ -171,7 +171,7 @@ BorrowersController.getBorrowerTrace = async (req, res, next) => {
 
 BorrowersController.editBorrowerInfo = async (req, res, next) => {
 	const borrowerCode = req.params.borrowerCode;
-	const updateData = req.body.update_data;
+	const updateData = JSON.parse(req.body.update_data);
 	console.log(updateData);
 
 	try {

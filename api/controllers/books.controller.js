@@ -515,7 +515,7 @@ BooksController.extendBook = async (req, res, next) => {
 
 BooksController.editBook = async (req, res, next) => {
 	const bookCode = req.params.bookCode;
-	const updateData = req.body.update_data;
+	const updateData = JSON.parse(req.body.update_data);
 	console.log(updateData);
 	try {
 		let book = await BookModel.findOneAndUpdate({

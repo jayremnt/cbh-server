@@ -166,11 +166,10 @@ UsersController.getUserInfo = async (req, res, next) => {
 
 UsersController.edit = async (req, res, next) => {
   const userId = req.body.userId;
-  let updateData = req.body.updateData;
+  let updateData = JSON.parse(req.body.updateData);
+  console.log(updateData);
 
   try {
-    console.log(req.body);
-    console.log(updateData);
     let user = updateData?.password ? await UserModel.findOneAndUpdate({
       _id: userId
     }, {
