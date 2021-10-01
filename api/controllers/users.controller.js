@@ -169,6 +169,7 @@ UsersController.edit = async (req, res, next) => {
   let updateData = req.body.updateData;
 
   try {
+    console.log(req.body);
     console.log(updateData);
     let user = updateData?.password ? await UserModel.findOneAndUpdate({
       _id: userId
