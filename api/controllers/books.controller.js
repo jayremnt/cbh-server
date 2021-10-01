@@ -549,9 +549,16 @@ BooksController.deleteBook = async (req, res, next) => {
 		});
 		console.log(book);
 		if (book) {
+			let isTraceDeleted = await TraceController.deleteBookTraces(book._id);
+			if (isTraceDeleted) {
+				return res.status(200).json({
+					error: false,
+					message: "Successfully deleted"
+				});
+			}
 			return res.status(200).json({
-				error: false,
-				message: "Successfully deleted"
+				error: true,
+				message: "Book deleted but failed to delete book traces"
 			});
 		}
 		return res.status(200).json({
