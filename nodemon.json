@@ -1,0 +1,6 @@
+{
+    "env": {
+      "DB_PW": "123321123A1!",
+      "JWT_KEY": "jayremntb"
+    }
+}
